@@ -10,24 +10,24 @@ package com.mateo.invertedindex;
  * @author Mateo
  */
 public class Index {
-    private int frase;
-    private int pos;
+    private final int FRASE_INDEX;
+    private final int POS_INDEX;
     public Index(int frase, int pos){
-        this.frase = frase;
-        this.pos = pos;
+        this.FRASE_INDEX = frase;
+        this.POS_INDEX = pos;
     }
     /**
      * @return the frase
      */
     public int getFrase() {
-        return frase;
+        return FRASE_INDEX;
     }
 
     /**
      * @return the pos
      */
     public int getPos() {
-        return pos;
+        return POS_INDEX;
     }
     
 }

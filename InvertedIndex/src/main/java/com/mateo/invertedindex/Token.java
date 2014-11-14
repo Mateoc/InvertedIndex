@@ -6,8 +6,6 @@
 package com.mateo.invertedindex;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.HashMap;
 
 /**
  *
