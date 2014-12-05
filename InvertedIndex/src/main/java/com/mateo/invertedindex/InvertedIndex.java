@@ -10,12 +10,18 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
 /**
  *
  * @author Mateo
  */
 public class InvertedIndex {
     //TODO: cambiar por arbolb
+	CacheManager manager;
+	private Cache cache; 
     private TreeMap<String,Token> tokens;
     
     private String[] data;
@@ -39,13 +45,23 @@ public class InvertedIndex {
                 j++;
             }
         }
+        
+        manager = CacheManager.create();
+        if(!manager.cacheExists("cache")){
+        	manager.addCache("cache");
+        }
+        cache = manager.getCache("cache");
     }
     
     public String[] get(String find){
         if(find==null){
             return null;
         }
-        find = find.toLowerCase();
+        find = find.toLowerCase(); 
+        Element element = cache.get(find);
+        if(element!= null){
+        	return (String[])element.getObjectValue();
+        }
         String[] results = null;
         if(tokens.containsKey(find)){
             ArrayList<Index> index = tokens.get(find).getIndexs();
@@ -54,6 +70,8 @@ public class InvertedIndex {
                 results[i]=(data[index.get(i).getFrase()]);
             }
         }
+        cache.put(new Element(find,results));
+        simulateSlowSearch();
         return results;
     } 
     
@@ -80,6 +98,15 @@ public class InvertedIndex {
         return aResults; 
     }
     
+    private void simulateSlowSearch() {
+        try {
+            long time = 3000L;
+            Thread.sleep( time );
+        } catch (InterruptedException e) {
+            throw new IllegalStateException( e );
+        }
+    }
+    
     public static void main(String args[]) {
         String[] data = new String[]{ 
             "A brilliant, festive study of JS Bach uses literature and painting to illuminate his 'dance-impregnated' music, writes Peter Conrad", 
@@ -90,13 +117,10 @@ public class InvertedIndex {
         }; 
         InvertedIndex invertedIndex= new InvertedIndex(data);
         String[] results = invertedIndex.get("music");
-        if (results!=null){
-            for(String s : results){
-                System.out.println(s);
-            }
-        }else{
-            System.out.println("Not found");
-        }
+        System.out.println(results[0]);
+        String[] results1 = invertedIndex.get("music");
+        System.out.println(results1[0]);
+        
     }
 
 }
